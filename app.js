@@ -1,4 +1,9 @@
 'use strict';
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'fsjstd-restapi.db'
+});
 
 // load modules
 const express = require('express');
@@ -41,6 +46,16 @@ app.use((err, req, res, next) => {
 
 // set our port
 app.set('port', process.env.PORT || 5000);
+
+// Test the database connection.
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+})();
 
 // start listening on our port
 const server = app.listen(app.get('port'), () => {
