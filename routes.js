@@ -4,6 +4,8 @@ const router = express.Router();
 
 const { User, Course } = require('./models');
 
+const { authenticateUser } = require('./middleware/auth');
+
 
 function asyncHandler(cb) {
   return async (req, res, next) => {
@@ -17,7 +19,15 @@ function asyncHandler(cb) {
 }
 
 // GET users 
-router.get('/users', asyncHandler(async (req, res) => {
+router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
+  const user = req.currentUser;
+
+  res.json({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.emailAddress,
+    password: user.password
+  });
 }));
 
 // POST users 
@@ -63,7 +73,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 }));
 
 // POST courses
-router.post('/courses', asyncHandler(async (req, res) => {
+router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
   try {
     await Course.create(req.body);
     res.status(201).location('/').end();
@@ -79,7 +89,7 @@ router.post('/courses', asyncHandler(async (req, res) => {
 }));
 
 // PUT courses
-router.put('/courses/:id', asyncHandler(async (req, res) => {
+router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
   try {
     const course = await Course.findByPk(req.params.id);
     await course.update(req.body);
@@ -95,7 +105,7 @@ router.put('/courses/:id', asyncHandler(async (req, res) => {
 }));
 
 // DELETE courses
-router.delete('/courses/:id', asyncHandler(async (req, res) => {
+router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
   const course = await Course.findByPk(req.params.id);
   await course.destroy();
   res.status(204).end();
