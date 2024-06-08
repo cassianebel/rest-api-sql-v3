@@ -22,8 +22,18 @@ router.get('/users', asyncHandler(async (req, res) => {
 
 // POST users 
 router.post('/users', asyncHandler(async (req, res) => {
-  await User.create(req.body);
-  res.status(201).location('/').end();
+  try {
+    await User.create(req.body);
+    res.status(201).location('/').end();
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      const errors = error.errors.map(err => err.message);
+      res.status(400).json({ errors });
+    } else {
+      throw error;
+    }
+  }
+  
 }));
 
 // GET courses
@@ -54,15 +64,34 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 
 // POST courses
 router.post('/courses', asyncHandler(async (req, res) => {
-  await Course.create(req.body);
-  res.status(201).location('/').end();
+  try {
+    await Course.create(req.body);
+    res.status(201).location('/').end();
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      const errors = error.errors.map(err => err.message);
+      res.status(400).json({ errors });
+    } else {
+      throw error;
+    }
+  }
+  
 }));
 
 // PUT courses
 router.put('/courses/:id', asyncHandler(async (req, res) => {
-  const course = await Course.findByPk(req.params.id);
-  await course.update(req.body);
-  res.status(204).end();
+  try {
+    const course = await Course.findByPk(req.params.id);
+    await course.update(req.body);
+    res.status(204).end();
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      const errors = error.errors.map(err => err.message);
+      res.status(400).json({ errors });
+    } else {
+      throw error;
+    }
+  }
 }));
 
 // DELETE courses
