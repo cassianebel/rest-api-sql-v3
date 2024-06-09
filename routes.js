@@ -49,9 +49,15 @@ router.post('/users', asyncHandler(async (req, res) => {
 // GET courses - return a list of courses
 router.get('/courses', asyncHandler(async (req, res) => {
   const courses = await Course.findAll({
+    attributes: { 
+      exclude: ['createdAt', 'updatedAt'] 
+    },
     include: [
       {
-        model: User
+        model: User,
+        attributes: { 
+          exclude: ['createdAt', 'updatedAt', 'password'] 
+        },
       },
     ],
   });
@@ -62,9 +68,15 @@ router.get('/courses', asyncHandler(async (req, res) => {
 // GET course - return a single course
 router.get('/courses/:id', asyncHandler(async (req, res) => {
   const course = await Course.findByPk(req.params.id, {
+    attributes: { 
+        exclude: ['createdAt', 'updatedAt'] 
+      },
     include: [
       {
-        model: User
+        model: User,
+        attributes: { 
+          exclude: ['createdAt', 'updatedAt', 'password'] 
+        },
       },
     ],
   });
